@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "skill-scaffold",
+  "description": "Scaffold new skills and plugins for the Bluesoft Agent Skills marketplace",
+  "version": "1.0.0",
+  "author": {
+    "name": "Bluesoft",
+    "email": "milan.sustek@bluesoft.cz"
+  },
+  "license": "MIT",
+  "keywords": ["scaffold", "skills", "template", "marketplace"]
+}

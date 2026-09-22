@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Node (if any plugin includes MCP servers/tooling)
+node_modules/
+npm-debug.log*
+
+# Local Copilot CLI plugin cache/test artifacts
+.copilot/
