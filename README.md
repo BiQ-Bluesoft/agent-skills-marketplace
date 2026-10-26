@@ -1,84 +1,94 @@
 # Bluesoft Agent Skills
 
-A public [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/use-copilot-agents/use-copilot-cli)
-**plugin marketplace**. It hosts plugins (skills, agents, MCP servers, and other Copilot CLI
-customizations) maintained by Bluesoft, packaged so anyone can discover and install them
-with a single command.
+A public **agent plugin marketplace** built on the [Agent Plugins 1.0](https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.0.0.md)
+standard. It hosts plugins (skills, agents, MCP servers) maintained by Bluesoft, installable
+in GitHub Copilot CLI, VS Code, Claude Code, and Codex.
 
 ## Install this marketplace
 
-```shell
-copilot plugin marketplace add <owner>/bluesoft-agent-skills-public
-```
+All clients read the same [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) catalog.
 
-Replace `<owner>` with the GitHub org/user this repo is pushed under. Once registered, browse
-and install plugins from it:
+**GitHub Copilot CLI**
 
 ```shell
-copilot plugin marketplace browse bluesoft-agent-skills
-copilot plugin install skill-scaffold@bluesoft-agent-skills
+copilot plugin marketplace add BiQ-Bluesoft/agent-skills-marketplace
+copilot plugin install xperience-by-kentico@bluesoft-agent-skills
 ```
 
-(Or, in an interactive `copilot` session: `/plugin marketplace add <owner>/bluesoft-agent-skills-public`.)
+**VS Code** ([agent plugins are in preview](https://code.visualstudio.com/docs/copilot/customization/agent-plugins) — enable `chat.plugins.enabled`)
+
+```jsonc
+"chat.plugins.marketplaces": ["BiQ-Bluesoft/agent-skills-marketplace"]
+```
+
+Then open the **Extensions** view, search `@agentPlugins`, and install.
+
+**Claude Code**
+
+```shell
+/plugin marketplace add BiQ-Bluesoft/agent-skills-marketplace
+/plugin install xperience-by-kentico@bluesoft-agent-skills
+```
+
+**Codex** — a workspace admin imports it once via ChatGPT **Admin > Plugins > Add > Import
+marketplace**, entering `https://github.com/BiQ-Bluesoft/agent-skills-marketplace`. See
+[Plugin management](https://developers.openai.com/codex/enterprise/plugin-management). After
+that, everyone installs via `/plugins`.
+
+## Available plugins
+
+| Plugin | Skill | Description |
+|--------|-------|-------------|
+| `xperience-by-kentico` | `xbyk-api-lookup` | Look up Xperience by Kentico (XbyK) API types, methods, interfaces, and namespaces from the official API reference. |
 
 ## Repository structure
 
 ```
-.github/plugin/marketplace.json   # Marketplace manifest (required) — lists all published plugins
-plugins/                          # One directory per plugin
-  skill-scaffold/                 # Example plugin: scaffolds new skills/plugins for this repo
-    plugin.json                   # Agent Plugins 1.0 manifest
-    skills/
-      new-skill/
-        SKILL.md
+.claude-plugin/marketplace.json    # Marketplace catalog — every client reads this
+plugins/
+  xperience-by-kentico/
+    plugin.json                    # Agent Plugins 1.0 manifest (Copilot CLI, VS Code, Codex)
+    .claude-plugin/plugin.json     # Claude Code manifest (same metadata, Claude's required layout)
+    skills/xbyk-api-lookup/SKILL.md
 ```
 
-Copilot CLI recognizes this repository as a plugin marketplace purely because
-`.github/plugin/marketplace.json` exists. Each entry in its `plugins` array points at a
-directory under `plugins/` that contains a `plugin.json` manifest.
+Claude Code doesn't yet auto-detect the Agent Plugins 1.0 root manifest, so each plugin
+ships both manifests to stay portable.
 
 ## Adding a new plugin
 
-1. Run the bundled `skill-scaffold` plugin's `new-skill` skill to generate the layout, or do
-   it by hand:
-   - Create `plugins/<plugin-name>/plugin.json` (use the [Agent Plugins 1.0](https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.0.0.md)
-     format shown in `plugins/skill-scaffold/plugin.json` for portability across clients).
-   - Add a skill at `plugins/<plugin-name>/skills/<skill-name>/SKILL.md`.
-   - For Copilot-specific extras (custom agents, hooks, slash commands, LSP servers), put
-     them under `plugins/<plugin-name>/com.github.copilot/`.
-2. Register the plugin in `.github/plugin/marketplace.json` (add an object with `name`,
-   `description`, `version`, and `source` to the `plugins` array).
-3. Test locally:
-   ```shell
-   copilot plugin install ./plugins/<plugin-name>
-   copilot plugin list
-   ```
-   Or test the full marketplace flow from the repo root:
+1. Create `plugins/<plugin-name>/plugin.json` (Agent Plugins 1.0 format, see
+   `plugins/xperience-by-kentico/plugin.json`) and a matching
+   `plugins/<plugin-name>/.claude-plugin/plugin.json`. Keep both in sync when bumping versions.
+2. Add a skill at `plugins/<plugin-name>/skills/<skill-name>/SKILL.md`. Copilot-specific
+   extras (agents, hooks, slash commands, LSP servers) go under `com.github.copilot/`.
+3. Register the plugin in `.claude-plugin/marketplace.json` (`name`, `description`,
+   `version`, `source`).
+4. Test locally:
    ```shell
    copilot plugin marketplace add .
    copilot plugin install <plugin-name>@bluesoft-agent-skills
+   copilot plugin list
    ```
-4. Open a PR. See [CONTRIBUTING.md](CONTRIBUTING.md).
+5. Open a PR. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Publishing / pushing to GitHub
 
-This repo is a local git repository with no remote configured yet. To publish it:
-
 ```shell
-# Create the GitHub repo (choose the right org), then:
-git remote add origin https://github.com/<owner>/bluesoft-agent-skills-public.git
 git branch -M main
 git push -u origin main
 ```
 
-Once pushed, anyone can install it with `copilot plugin marketplace add <owner>/bluesoft-agent-skills-public`.
+If the remote already has unrelated commits, reconcile first (`git pull --rebase
+--allow-unrelated-histories origin main`) or force-push to replace its contents.
 
 ## Reference
 
-- [Creating a plugin for GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-creating)
-- [Creating a plugin marketplace for GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-marketplace)
-- [Finding and installing plugins](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing)
-- [CLI plugin reference (`plugin.json` / `marketplace.json` schemas)](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference)
+- [Agent Plugins 1.0 spec](https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.0.0.md)
+- [Copilot CLI plugins](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-marketplace) · [CLI reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference)
+- [Agent plugins in VS Code](https://code.visualstudio.com/docs/copilot/customization/agent-plugins)
+- [Claude Code marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) · [installing plugins](https://code.claude.com/docs/en/discover-plugins)
+- [Codex plugins](https://developers.openai.com/codex/plugins) · [workspace import](https://developers.openai.com/codex/enterprise/plugin-management)
 
 ## License
 

@@ -1,0 +1,11 @@
+{
+  "name": "xperience-by-kentico",
+  "description": "Skills for developing and working with Xperience by Kentico (XbyK) projects.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Bluesoft",
+    "email": "milan.sustek@bluesoft.cz"
+  },
+  "license": "MIT",
+  "keywords": ["kentico", "xperience", "xbyk", "cms"]
+}

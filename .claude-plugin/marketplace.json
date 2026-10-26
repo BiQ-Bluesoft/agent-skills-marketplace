@@ -1,0 +1,19 @@
+{
+  "name": "bluesoft-agent-skills",
+  "owner": {
+    "name": "Bluesoft",
+    "email": "milan.sustek@bluesoft.cz"
+  },
+  "metadata": {
+    "description": "Curated agent plugins (skills, agents, MCP servers) maintained by Bluesoft, installable in GitHub Copilot CLI, VS Code, Claude Code, and Codex.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "xperience-by-kentico",
+      "description": "Skills for developing and working with Xperience by Kentico (XbyK) projects.",
+      "version": "1.0.0",
+      "source": "plugins/xperience-by-kentico"
+    }
+  ]
+}
